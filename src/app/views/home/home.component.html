@@ -17,9 +17,28 @@
                     Stripe
                 </button>
                 <div class="" [mdbCollapse]="isCollapsed" #stripeEndpoints="bs-collapse">
+                    <hr>
+                    <p>Cards</p>
                     <ul>
-                        <li>Delete Card - <strong>http://es.tr3umphant-designs.com/assets/stripe/cards/deleteCard.php</strong></li>
-                        <li>Create Charge - <strong>http://es.tr3umphant-designs.com/assets/stripe/charges/createCharge.php</strong></li>
+                        <li>Delete Card - <strong>http://es.tr3umphant-designs.com/assets/stripe/cards/deleteCard.php [ apiKey: String | customerId: String | cardId: String ]</strong></li>
+                    </ul>
+                    <hr>
+                    <p>Charges</p>
+                    <ul>
+                        <li>Capture Charge - <strong>http://es.tr3umphant-designs.com/assets/stripe/charges/captureCharge.php [ apiKey: String | chargeId: String ]</strong></li>
+                        <li>Create Charge - <strong>http://es.tr3umphant-designs.com/assets/stripe/charges/createCharge.php [ apiKey: String | amount: Int | customerId: String | description: String ]</strong></li>
+                        <li>List All Charges - <strong>http://es.tr3umphant-designs.com/assets/stripe/charges/listAllCharges.php [ apiKey: String | customerId: String ]</strong></li>
+                        <li>Retrieve Charge - <strong>http://es.tr3umphant-designs.com/assets/stripe/charges/retrieveCharge.php [ apiKey: String | chargeId: String ]</strong></li>
+                        <li>Update Charge - <strong>http://es.tr3umphant-designs.com/assets/stripe/charges/updateCharge.php [ apiKey: String | chargeId: String | description: String ]</strong></li>
+                    </ul>
+                    <hr>
+                    <p>Customer</p>
+                    <ul>
+                        <li>Create Customer - <strong>http://es.tr3umphant-designs.com/assets/stripe/customer/createCustomer.php [ apiKey: String | email: String ]</strong></li>
+                        <li>Delete Customer - <strong>http://es.tr3umphant-designs.com/assets/stripe/customer/deleteCustomer.php [ apiKey: String | customerId: String ]</strong></li>
+                        <li>List All Customers - <strong>http://es.tr3umphant-designs.com/assets/stripe/customer/listAllCustomers.php [ apiKey: String ]</strong></li>
+                        <li>Retrieve Customer - <strong>http://es.tr3umphant-designs.com/assets/stripe/customer/retrieveCustomer.php [ apiKey: String | customerId: String ]</strong></li>
+                        <li>Update Customer - <strong>http://es.tr3umphant-designs.com/assets/stripe/customer/updateCustomer.php [ apiKey: String | customerId: String | description: String | token: String ]</strong></li>
                     </ul>
                 </div>  
             </div>
@@ -30,8 +49,9 @@
                     Email
                 </button>
                 <div class="" [mdbCollapse]="isCollapsed" #emailEndpoints="bs-collapse">
+                    <hr>
                     <ul>
-                        <li>Send Email - <strong>http://es.tr3umphant-designs.com/assets/email/sendEmail.php</strong></li>
+                        <li>Send Email - <strong>http://es.tr3umphant-designs.com/assets/email/sendEmail.php [ to: String | from: String | subject: String | message: String ]</strong></li>
                     </ul>
                 </div>  
             </div>
