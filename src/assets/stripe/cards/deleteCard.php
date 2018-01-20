@@ -17,24 +17,51 @@
             //Print json object.
             echo $customer->__toJSON();
         }catch(\Stripe\Error\Card $e) {
-            echo $e->__toJSON();
+            // Since it's a decline, \Stripe\Error\Card will be caught
+            $body = $e->getJsonBody();
+            $err  = $body['error'];
+
+            print('Status is:' . $e->getHttpStatus() . "\n");
+            print('Type is:' . $err['type'] . "\n");
+            print('Code is:' . $err['code'] . "\n");
+            // param is '' in this case
+            print('Param is:' . $err['param'] . "\n");
+            print('Message is:' . $err['message'] . "\n");
         }catch (\Stripe\Error\RateLimit $e) {
             // Too many requests made to the API too quickly
-            echo $e->__toJSON();
-        }catch (\Stripe\Error\InvalidRequest $e) {
-            // Invalid parameters were supplied to Stripe's API
-            echo $e->__toJSON();
+            // Since it's a decline, \Stripe\Error\Card will be caught
+            $body = $e->getJsonBody();
+            $err  = $body['error'];
+
+            print('Status is:' . $e->getHttpStatus() . "\n");
+            print('Type is:' . $err['type'] . "\n");
+            print('Code is:' . $err['code'] . "\n");
+            // param is '' in this case
+            print('Param is:' . $err['param'] . "\n");
+            print('Message is:' . $err['message'] . "\n");        }catch (\Stripe\Error\InvalidRequest $e) {
         }catch (\Stripe\Error\Authentication $e) {
             // Authentication with Stripe's API failed
-            echo $e->__toJSON();
-        }catch (\Stripe\Error\ApiConnection $e) {
-            // Network communication with Stripe failed
-            echo $e->__toJSON();
+            // Since it's a decline, \Stripe\Error\Card will be caught
+            $body = $e->getJsonBody();
+            $err  = $body['error'];
+
+            print('Status is:' . $e->getHttpStatus() . "\n");
+            print('Type is:' . $err['type'] . "\n");
+            print('Code is:' . $err['code'] . "\n");
+            // param is '' in this case
+            print('Param is:' . $err['param'] . "\n");
+            print('Message is:' . $err['message'] . "\n");        }catch (\Stripe\Error\ApiConnection $e) {
         }catch (\Stripe\Error\Base $e) {
-            echo $e->__toJSON();
-        }catch (Exception $e) {
-            // Something else happened, completely unrelated to Stripe
-            echo $e->__toJSON();
+            // Since it's a decline, \Stripe\Error\Card will be caught
+            $body = $e->getJsonBody();
+            $err  = $body['error'];
+
+            print('Status is:' . $e->getHttpStatus() . "\n");
+            print('Type is:' . $err['type'] . "\n");
+            print('Code is:' . $err['code'] . "\n");
+            // param is '' in this case
+            print('Param is:' . $err['param'] . "\n");
+            print('Message is:' . $err['message'] . "\n");        }catch (Exception $e) {
         }           
     }else{
         echo "Api key not set, cannot access. Goodbye.";
