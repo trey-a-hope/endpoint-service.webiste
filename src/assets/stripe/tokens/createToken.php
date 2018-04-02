@@ -1,30 +1,20 @@
 <?php 
     require_once($_SERVER['DOCUMENT_ROOT']."/assets/vendor/autoload.php");
     
-    $apiKey = $_POST['apiKey'];
-    $object = $_POST['object'];
-    $exp_month = $_POST['exp_month'];
-    $exp_year = $_POST['exp_year'];
-    $number = $_POST['number'];
-    $customerId = $_POST['customerId'];
+    $apiKey = $_POST["apiKey"];
 
     if(isset($apiKey)){
         try{
             //Set API Key.
             \Stripe\Stripe::setApiKey($apiKey);
+        
+            $customerId     = $_POST["customerId"];
+            $token          = $_POST["token"];
     
             $customer = \Stripe\Customer::retrieve($customerId);
-            $customer->sources->create(
-                array(
-                    'source' => array(
-                        'object' => $object,
-                        'exp_month' => $exp_month,
-                        'exp_year' => $exp_year,
-                        'number' => $number
-                    )
-                )
-            );
-            echo $customer->__toJSON();
+            $customer->sources->create(array("source" => $token));
+    
+            echo $charge->__toJSON(); 
         }catch(\Stripe\Error\Card $e) {
             echo $e->__toJSON();
         }catch (\Stripe\Error\RateLimit $e) {
