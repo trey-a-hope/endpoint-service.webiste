@@ -1,23 +1,27 @@
 <?php 
+    //THIS ENDPOINT IS CURRENTLY NOT WORKING.
     require_once($_SERVER['DOCUMENT_ROOT']."/assets/vendor/autoload.php");
     
-    $apiKey = $_POST["apiKey"];
+    $apiKey = $_POST['apiKey'];
+    $amount = $_POST['amount'];
+    $stripe_account = $_POST['stripe_account']; //Can be card id as well.
 
     if(isset($apiKey)){
         try{
             //Set API Key.
             \Stripe\Stripe::setApiKey($apiKey);
-        
-            $amount         = $_POST["amount"];
-            $accountId      = $_POST["accountId"]; //Can be card id as well.
     
             $params = array(
-                "amount"        => $amount,
-                "currency"      => "usd",
-                "destination"   => $accountId
+                'amount'        => $amount,
+                'currency'      => 'usd',
+                'method'        => 'instant'
+            );
+
+            $params2 = array(
+                'stripe_account' => $stripe_account
             );
     
-            $charge = \Stripe\Transfer::create($params);
+            $charge = \Stripe\Transfer::create($params, $params2);
     
             echo $charge->__toJSON(); 
         }catch(\Stripe\Error\Card $e) {

@@ -2,50 +2,54 @@
 
 namespace Stripe;
 
+/**
+ * Class Charge
+ *
+ * @property string $id
+ * @property string $object
+ * @property int $amount
+ * @property int $amount_refunded
+ * @property string $application
+ * @property string $application_fee
+ * @property string $balance_transaction
+ * @property bool $captured
+ * @property int $created
+ * @property string $currency
+ * @property string $customer
+ * @property string $description
+ * @property string $destination
+ * @property string $dispute
+ * @property string $failure_code
+ * @property string $failure_message
+ * @property mixed $fraud_details
+ * @property string $invoice
+ * @property bool $livemode
+ * @property StripeObject $metadata
+ * @property string $on_behalf_of
+ * @property string $order
+ * @property mixed $outcome
+ * @property bool $paid
+ * @property string $receipt_email
+ * @property string $receipt_number
+ * @property bool $refunded
+ * @property Collection $refunds
+ * @property string $review
+ * @property mixed $shipping
+ * @property mixed $source
+ * @property string $source_transfer
+ * @property string $statement_descriptor
+ * @property string $status
+ * @property string $transfer
+ * @property string $transfer_group
+ *
+ * @package Stripe
+ */
 class Charge extends ApiResource
 {
-    /**
-     * @param string $id The ID of the charge to retrieve.
-     * @param array|string|null $options
-     *
-     * @return Charge
-     */
-    public static function retrieve($id, $options = null)
-    {
-        return self::_retrieve($id, $options);
-    }
-
-    /**
-     * @param array|null $params
-     * @param array|string|null $options
-     *
-     * @return array An array of Charges.
-     */
-    public static function all($params = null, $options = null)
-    {
-        return self::_all($params, $options);
-    }
-
-    /**
-     * @param array|null $params
-     * @param array|string|null $options
-     *
-     * @return Charge The created charge.
-     */
-    public static function create($params = null, $options = null)
-    {
-        return self::_create($params, $options);
-    }
-
-    /**
-     * @param array|string|null $options
-     *
-     * @return Charge The saved charge.
-     */
-    public function save($options = null)
-    {
-        return $this->_save($options);
-    }
+    use ApiOperations\All;
+    use ApiOperations\Create;
+    use ApiOperations\Retrieve;
+    use ApiOperations\Update;
 
     /**
      * @param array|null $params
@@ -79,18 +83,22 @@ class Charge extends ApiResource
      * @param array|null $params
      * @param array|string|null $options
      *
+     * @deprecated Use the `save` method on the Dispute object
+     *
      * @return array The updated dispute.
      */
     public function updateDispute($params = null, $options = null)
     {
         $url = $this->instanceUrl() . '/dispute';
         list($response, $opts) = $this->_request('post', $url, $params, $options);
-        $this->refreshFrom(array('dispute' => $response), $opts, true);
+        $this->refreshFrom(['dispute' => $response], $opts, true);
         return $this->dispute;
     }
 
     /**
      * @param array|string|null $options
+     *
+     * @deprecated Use the `close` method on the Dispute object
      *
      * @return Charge The updated charge.
      */
@@ -109,7 +117,7 @@ class Charge extends ApiResource
      */
     public function markAsFraudulent($opts = null)
     {
-        $params = array('fraud_details' => array('user_report' => 'fraudulent'));
+        $params = ['fraud_details' => ['user_report' => 'fraudulent']];
         $url = $this->instanceUrl();
         list($response, $opts) = $this->_request('post', $url, $params, $opts);
         $this->refreshFrom($response, $opts);
@@ -123,7 +131,7 @@ class Charge extends ApiResource
      */
     public function markAsSafe($opts = null)
     {
-        $params = array('fraud_details' => array('user_report' => 'safe'));
+        $params = ['fraud_details' => ['user_report' => 'safe']];
         $url = $this->instanceUrl();
         list($response, $opts) = $this->_request('post', $url, $params, $opts);
         $this->refreshFrom($response, $opts);

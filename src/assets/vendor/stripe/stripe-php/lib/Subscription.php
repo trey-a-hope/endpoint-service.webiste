@@ -2,29 +2,65 @@
 
 namespace Stripe;
 
+/**
+ * Class Subscription
+ *
+ * @property string $id
+ * @property string $object
+ * @property float $application_fee_percent
+ * @property string $billing
+ * @property bool $cancel_at_period_end
+ * @property int $canceled_at
+ * @property int $created
+ * @property int current_period_end
+ * @property int current_period_start
+ * @property string $customer
+ * @property int $days_until_due
+ * @property mixed $discount
+ * @property int $ended_at
+ * @property Collection $items
+ * @property boolean $livemode
+ * @property StripeObject $metadata
+ * @property Plan $plan
+ * @property int $quantity
+ * @property int $start
+ * @property string $status
+ * @property float $tax_percent
+ * @property int $trial_end
+ * @property int $trial_start
+ *
+ * @package Stripe
+ */
 class Subscription extends ApiResource
 {
-    /**
-     * @return string The API URL for this Stripe subscription.
-     */
-    public function instanceUrl()
-    {
-        $id = $this['id'];
-        $customer = $this['customer'];
-        if (!$id) {
-            throw new Error\InvalidRequest(
-                "Could not determine which URL to request: " .
-                "class instance has invalid ID: $id",
-                null
-            );
-        }
-        $id = Util\Util::utf8($id);
-        $customer = Util\Util::utf8($customer);
+    use ApiOperations\All;
+    use ApiOperations\Create;
+    use ApiOperations\Delete {
+        delete as protected _delete;
+    }
+    use ApiOperations\Retrieve;
+    use ApiOperations\Update;
 
-        $base = Customer::classUrl();
-        $customerExtn = urlencode($customer);
-        $extn = urlencode($id);
-        return "$base/$customerExtn/subscriptions/$extn";
+    /**
+     * These constants are possible representations of the status field.
+     *
+     * @link https://stripe.com/docs/api#subscription_object-status
+     */
+    const STATUS_ACTIVE = 'active';
+    const STATUS_CANCELED = 'canceled';
+    const STATUS_PAST_DUE = 'past_due';
+    const STATUS_TRIALING = 'trialing';
+    const STATUS_UNPAID = 'unpaid';
+
+    public static function getSavedNestedResources()
+    {
+        static $savedNestedResources = null;
+        if ($savedNestedResources === null) {
+            $savedNestedResources = new Util\Set([
+                'source',
+            ]);
+        }
+        return $savedNestedResources;
     }
 
     /**
@@ -38,22 +74,12 @@ class Subscription extends ApiResource
     }
 
     /**
-     * @param array|string|null $opts
-     *
-     * @return Subscription The saved subscription.
-     */
-    public function save($opts = null)
-    {
-        return $this->_save($opts);
-    }
-
-    /**
      * @return Subscription The updated subscription.
      */
     public function deleteDiscount()
     {
         $url = $this->instanceUrl() . '/discount';
         list($response, $opts) = $this->_request('delete', $url);
-        $this->refreshFrom(array('discount' => null), $opts, true);
+        $this->refreshFrom(['discount' => null], $opts, true);
     }
 }

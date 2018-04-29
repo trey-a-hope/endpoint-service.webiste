@@ -1,17 +1,16 @@
 <?php 
     require_once($_SERVER['DOCUMENT_ROOT']."/assets/vendor/autoload.php");
     
-    $apiKey = $_POST["apiKey"];
+    $apiKey = $_POST['apiKey'];
+    $amount = $_POST['amount'];
+    $customerId = $_POST['customerId'];
+    $description = $_POST['description'];
 
     if(isset($apiKey)){
         try{
             //Set API Key.
             \Stripe\Stripe::setApiKey($apiKey);
         
-            $amount         = $_POST["amount"];
-            $customerId     = $_POST["customerId"];
-            $description    = $_POST["description"];
-    
             $params = array(
                 "amount"        => $amount,
                 "currency"      => "usd",

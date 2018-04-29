@@ -1,16 +1,15 @@
 <?php 
     require_once($_SERVER['DOCUMENT_ROOT']."/assets/vendor/autoload.php");
     
-    $apiKey = $_POST["apiKey"];
+    $apiKey = $_POST['apiKey'];
+    $chargeId = $_POST['chargeId'];
+    $description = $_POST['description'];
 
     if(isset($apiKey)){
         try{
             //Set API Key.
             \Stripe\Stripe::setApiKey($apiKey);
         
-            $chargeId       = $_POST["chargeId"];
-            $description    = $_POST["description"];
-    
             $charge = \Stripe\Charge::retrieve($chargeId);
 
             $charge->description = $description;

@@ -1,14 +1,15 @@
 <?php 
     require_once($_SERVER['DOCUMENT_ROOT']."/assets/vendor/autoload.php");
     
-    $apiKey = $_POST["apiKey"];
+    $apiKey = $_POST['apiKey'];
+    $customerId = $_POST['customerId'];
 
     if(isset($apiKey)){
         try{
             //Set API Key.
             \Stripe\Stripe::setApiKey($apiKey);
             
-            $charges = \Stripe\Charge::all(array("customer" => $_POST["customerId"]));
+            $charges = \Stripe\Charge::all(array("customer" => $customerId));
     
             echo $charges->__toJSON(); 
         }catch(\Stripe\Error\Card $e) {

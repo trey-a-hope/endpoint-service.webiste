@@ -1,7 +1,9 @@
 <?php 
     require_once($_SERVER['DOCUMENT_ROOT']."/assets/vendor/autoload.php");
     
-    $apiKey = $_POST["apiKey"];
+    $apiKey = $_POST['apiKey'];
+    $customerId = $_POST['customerId'];
+    $cardId = $_POST['cardId'];
     
     if(isset($apiKey)){
         try{
@@ -9,10 +11,10 @@
             \Stripe\Stripe::setApiKey($apiKey);
             
             //Retrieve customer.
-            $customer = \Stripe\Customer::retrieve($_POST["customerId"]);
+            $customer = \Stripe\Customer::retrieve($customerId);
 
             //Remove card.
-            $customer->sources->retrieve($_POST["cardId"])->delete();
+            $customer->sources->retrieve($cardId)->delete();
 
             //Print json object.
             echo $customer->__toJSON();

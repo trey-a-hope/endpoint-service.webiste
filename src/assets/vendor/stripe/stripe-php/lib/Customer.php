@@ -2,61 +2,49 @@
 
 namespace Stripe;
 
+/**
+ * Class Customer
+ *
+ * @property string $id
+ * @property string $object
+ * @property int $account_balance
+ * @property string $business_vat_id
+ * @property string $created
+ * @property string $currency
+ * @property string $default_source
+ * @property bool $delinquent
+ * @property string $description
+ * @property mixed $discount
+ * @property string $email
+ * @property bool $livemode
+ * @property StripeObject $metadata
+ * @property mixed $shipping
+ * @property Collection $sources
+ * @property Collection $subscriptions
+ *
+ * @package Stripe
+ */
 class Customer extends ApiResource
 {
-    /**
-     * @param string $id The ID of the customer to retrieve.
-     * @param array|string|null $opts
-     *
-     * @return Customer
-     */
-    public static function retrieve($id, $opts = null)
+    use ApiOperations\All;
+    use ApiOperations\Create;
+    use ApiOperations\Delete;
+    use ApiOperations\NestedResource;
+    use ApiOperations\Retrieve;
+    use ApiOperations\Update;
+
+    public static function getSavedNestedResources()
     {
-        return self::_retrieve($id, $opts);
+        static $savedNestedResources = null;
+        if ($savedNestedResources === null) {
+            $savedNestedResources = new Util\Set([
+                'source',
+            ]);
+        }
+        return $savedNestedResources;
     }
 
-    /**
-     * @param array|null $params
-     * @param array|string|null $opts
-     *
-     * @return array An array of Customers.
-     */
-    public static function all($params = null, $opts = null)
-    {
-        return self::_all($params, $opts);
-    }
-
-    /**
-     * @param array|null $params
-     * @param array|string|null $opts
-     *
-     * @return Customer The created customer.
-     */
-    public static function create($params = null, $opts = null)
-    {
-        return self::_create($params, $opts);
-    }
-
-    /**
-     * @param array|string|null $opts
-     *
-     * @return Customer The saved customer.
-     */
-    public function save($opts = null)
-    {
-        return $this->_save($opts);
-    }
-
-    /**
-     * @param array|null $params
-     * @param array|string|null $opts
-     *
-     * @return Customer The deleted customer.
-     */
-    public function delete($params = null, $opts = null)
-    {
-        return $this->_delete($params, $opts);
-    }
+    const PATH_SOURCES = '/sources';
 
     /**
      * @param array|null $params
@@ -65,9 +53,7 @@ class Customer extends ApiResource
      */
     public function addInvoiceItem($params = null)
     {
-        if (!$params) {
-            $params = array();
-        }
+        $params = $params ?: [];
         $params['customer'] = $this->id;
         $ii = InvoiceItem::create($params, $this->_opts);
         return $ii;
@@ -80,9 +66,7 @@ class Customer extends ApiResource
      */
     public function invoices($params = null)
     {
-        if (!$params) {
-            $params = array();
-        }
+        $params = $params ?: [];
         $params['customer'] = $this->id;
         $invoices = Invoice::all($params, $this->_opts);
         return $invoices;
@@ -95,9 +79,7 @@ class Customer extends ApiResource
      */
     public function invoiceItems($params = null)
     {
-        if (!$params) {
-            $params = array();
-        }
+        $params = $params ?: [];
         $params['customer'] = $this->id;
         $iis = InvoiceItem::all($params, $this->_opts);
         return $iis;
@@ -110,9 +92,7 @@ class Customer extends ApiResource
      */
     public function charges($params = null)
     {
-        if (!$params) {
-            $params = array();
-        }
+        $params = $params ?: [];
         $params['customer'] = $this->id;
         $charges = Charge::all($params, $this->_opts);
         return $charges;
@@ -127,7 +107,7 @@ class Customer extends ApiResource
     {
         $url = $this->instanceUrl() . '/subscription';
         list($response, $opts) = $this->_request('post', $url, $params);
-        $this->refreshFrom(array('subscription' => $response), $opts, true);
+        $this->refreshFrom(['subscription' => $response], $opts, true);
         return $this->subscription;
     }
 
@@ -140,19 +120,80 @@ class Customer extends ApiResource
     {
         $url = $this->instanceUrl() . '/subscription';
         list($response, $opts) = $this->_request('delete', $url, $params);
-        $this->refreshFrom(array('subscription' => $response), $opts, true);
+        $this->refreshFrom(['subscription' => $response], $opts, true);
         return $this->subscription;
     }
 
     /**
-     * @param array|null $params
-     *
      * @return Customer The updated customer.
      */
     public function deleteDiscount()
     {
         $url = $this->instanceUrl() . '/discount';
         list($response, $opts) = $this->_request('delete', $url);
-        $this->refreshFrom(array('discount' => null), $opts, true);
+        $this->refreshFrom(['discount' => null], $opts, true);
+    }
+
+    /**
+     * @param array|null $id The ID of the customer on which to create the source.
+     * @param array|null $params
+     * @param array|string|null $opts
+     *
+     * @return ApiResource
+     */
+    public static function createSource($id, $params = null, $opts = null)
+    {
+        return self::_createNestedResource($id, static::PATH_SOURCES, $params, $opts);
+    }
+
+    /**
+     * @param array|null $id The ID of the customer to which the source belongs.
+     * @param array|null $sourceId The ID of the source to retrieve.
+     * @param array|null $params
+     * @param array|string|null $opts
+     *
+     * @return ApiResource
+     */
+    public static function retrieveSource($id, $sourceId, $params = null, $opts = null)
+    {
+        return self::_retrieveNestedResource($id, static::PATH_SOURCES, $sourceId, $params, $opts);
+    }
+
+    /**
+     * @param array|null $id The ID of the customer to which the source belongs.
+     * @param array|null $sourceId The ID of the source to update.
+     * @param array|null $params
+     * @param array|string|null $opts
+     *
+     * @return ApiResource
+     */
+    public static function updateSource($id, $sourceId, $params = null, $opts = null)
+    {
+        return self::_updateNestedResource($id, static::PATH_SOURCES, $sourceId, $params, $opts);
+    }
+
+    /**
+     * @param array|null $id The ID of the customer to which the source belongs.
+     * @param array|null $sourceId The ID of the source to delete.
+     * @param array|null $params
+     * @param array|string|null $opts
+     *
+     * @return ApiResource
+     */
+    public static function deleteSource($id, $sourceId, $params = null, $opts = null)
+    {
+        return self::_deleteNestedResource($id, static::PATH_SOURCES, $sourceId, $params, $opts);
+    }
+
+    /**
+     * @param array|null $id The ID of the customer on which to retrieve the sources.
+     * @param array|null $params
+     * @param array|string|null $opts
+     *
+     * @return ApiResource
+     */
+    public static function allSources($id, $params = null, $opts = null)
+    {
+        return self::_allNestedResources($id, static::PATH_SOURCES, $params, $opts);
     }
 }

@@ -1,7 +1,9 @@
 <?php 
     require_once($_SERVER['DOCUMENT_ROOT']."/assets/vendor/autoload.php");
 
-    $apiKey = $_POST["apiKey"];
+    $apiKey = $_POST['apiKey'];
+    $email = $_POST['email'];
+    $description = $_POST['description'];
     
     if(isset($apiKey)){
         try{
@@ -10,8 +12,8 @@
             
             //Create customer.
             $customer = \Stripe\Customer::create(array(
-                "email"         => $_POST["email"],
-                "description"   => "Customer for ".$_POST["email"]
+                "email" => $email,
+                "description" => "Customer for ".$email
             ));
 
             echo $customer->__toJSON();

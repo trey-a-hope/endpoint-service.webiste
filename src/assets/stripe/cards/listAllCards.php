@@ -1,7 +1,8 @@
 <?php 
     require_once($_SERVER['DOCUMENT_ROOT']."/assets/vendor/autoload.php");
     
-    $apiKey = $_POST["apiKey"];
+    $apiKey = $_POST['apiKey'];
+    $customerId = $_POST['customerId'];
 
     if(isset($apiKey)){
         try{
@@ -9,7 +10,6 @@
             \Stripe\Stripe::setApiKey($apiKey);
             
         
-            $customerId     = $_POST["customerId"];
     
             $customer = \Stripe\Customer::retrieve($customerId);
             $cards = $customer->sources->all(array('object' => 'card'));

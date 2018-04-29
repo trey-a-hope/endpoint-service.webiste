@@ -2,13 +2,49 @@
 
 namespace Stripe;
 
-abstract class ApiResource extends Object
+/**
+ * Class ApiResource
+ *
+ * @package Stripe
+ */
+abstract class ApiResource extends StripeObject
 {
-    private static $HEADERS_TO_PERSIST = array('Stripe-Account' => true, 'Stripe-Version' => true);
+    use ApiOperations\Request;
 
-    public static function baseUrl()
+    /**
+     * @return \Stripe\Util\Set A list of fields that can be their own type of
+     * API resource (say a nested card under an account for example), and if
+     * that resource is set, it should be transmitted to the API on a create or
+     * update. Doing so is not the default behavior because API resources
+     * should normally be persisted on their own RESTful endpoints.
+     */
+    public static function getSavedNestedResources()
     {
-        return Stripe::$apiBase;
+        static $savedNestedResources = null;
+        if ($savedNestedResources === null) {
+            $savedNestedResources = new Util\Set();
+        }
+        return $savedNestedResources;
+    }
+
+    /**
+     * @var boolean A flag that can be set a behavior that will cause this
+     * resource to be encoded and sent up along with an update of its parent
+     * resource. This is usually not desirable because resources are updated
+     * individually on their own endpoints, but there are certain cases,
+     * replacing a customer's source for example, where this is allowed.
+     */
+    public $saveWithParent = false;
+
+    public function __set($k, $v)
+    {
+        parent::__set($k, $v);
+        $v = $this->$k;
+        if ((static::getSavedNestedResources()->includes($k)) &&
+            ($v instanceof ApiResource)) {
+            $v->saveWithParent = true;
+        }
+        return $v;
     }
 
     /**
@@ -25,7 +61,8 @@ abstract class ApiResource extends Object
             $this->_retrieveOptions,
             $this->_opts->headers
         );
-        $this->refreshFrom($response, $this->_opts);
+        $this->setLastResponse($response);
+        $this->refreshFrom($response->json, $this->_opts);
         return $this;
     }
 
@@ -54,6 +91,14 @@ abstract class ApiResource extends Object
     }
 
     /**
+     * @return string The base URL for the given class.
+     */
+    public static function baseUrl()
+    {
+        return Stripe::$apiBase;
+    }
+
+    /**
      * @return string The endpoint URL for the given class.
      */
     public static function classUrl()
@@ -63,11 +108,10 @@ abstract class ApiResource extends Object
     }
 
     /**
-     * @return string The full API URL for this API resource.
+     * @return string The instance endpoint URL for the given class.
      */
-    public function instanceUrl()
+    public static function resourceUrl($id)
     {
-        $id = $this['id'];
         if ($id === null) {
             $class = get_called_class();
             $message = "Could not determine which URL to request: "
@@ -80,82 +124,11 @@ abstract class ApiResource extends Object
         return "$base/$extn";
     }
 
-    private static function _validateParams($params = null)
+    /**
+     * @return string The full API URL for this API resource.
+     */
+    public function instanceUrl()
     {
-        if ($params && !is_array($params)) {
-            $message = "You must pass an array as the first argument to Stripe API "
-               . "method calls.  (HINT: an example call to create a charge "
-               . "would be: \"Stripe\\Charge::create(array('amount' => 100, "
-               . "'currency' => 'usd', 'card' => array('number' => "
-               . "4242424242424242, 'exp_month' => 5, 'exp_year' => 2015)))\")";
-            throw new Error\Api($message);
-        }
-    }
-
-    protected function _request($method, $url, $params = array(), $options = null)
-    {
-        $opts = $this->_opts->merge($options);
-        return static::_staticRequest($method, $url, $params, $opts);
-    }
-
-    protected static function _staticRequest($method, $url, $params, $options)
-    {
-        $opts = Util\RequestOptions::parse($options);
-        $requestor = new ApiRequestor($opts->apiKey, static::baseUrl());
-        list($response, $opts->apiKey) = $requestor->request($method, $url, $params, $opts->headers);
-        foreach ($opts->headers as $k => $v) {
-            if (!array_key_exists($k, self::$HEADERS_TO_PERSIST)) {
-                unset($opts->headers[$k]);
-            }
-        }
-        return array($response, $opts);
-    }
-
-    protected static function _retrieve($id, $options = null)
-    {
-        $opts = Util\RequestOptions::parse($options);
-        $instance = new static($id, $opts);
-        $instance->refresh();
-        return $instance;
-    }
-
-    protected static function _all($params = null, $options = null)
-    {
-        self::_validateParams($params);
-        $url = static::classUrl();
-
-        list($response, $opts) = static::_staticRequest('get', $url, $params, $options);
-        return Util\Util::convertToStripeObject($response, $opts);
-    }
-
-    protected static function _create($params = null, $options = null)
-    {
-        self::_validateParams($params);
-        $base = static::baseUrl();
-        $url = static::classUrl();
-
-        list($response, $opts) = static::_staticRequest('post', $url, $params, $options);
-        return Util\Util::convertToStripeObject($response, $opts);
-    }
-
-    protected function _save($options = null)
-    {
-        $params = $this->serializeParameters();
-        if (count($params) > 0) {
-            $url = $this->instanceUrl();
-            list($response, $opts) = $this->_request('post', $url, $params, $options);
-            $this->refreshFrom($response, $opts);
-        }
-        return $this;
-    }
-
-    protected function _delete($params = null, $options = null)
-    {
-        self::_validateParams($params);
-
-        $url = $this->instanceUrl();
-        list($response, $opts) = $this->_request('delete', $url, $params, $options);
-        $this->refreshFrom($response, $opts);
-        return $this;
+        return static::resourceUrl($this['id']);
     }
 }
