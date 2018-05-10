@@ -4,7 +4,7 @@
     
     $apiKey = $_POST['apiKey'];
     $amount = $_POST['amount'];
-    $stripe_account = $_POST['stripe_account']; //Can be card id as well.
+    $destination = $_POST['destination']; //Can be card id as well.
 
     if(isset($apiKey)){
         try{
@@ -14,14 +14,10 @@
             $params = array(
                 'amount'        => $amount,
                 'currency'      => 'usd',
-                'method'        => 'instant'
-            );
-
-            $params2 = array(
-                'stripe_account' => $stripe_account
+                'destination'   => $destination
             );
     
-            $charge = \Stripe\Transfer::create($params, $params2);
+            $charge = \Stripe\Transfer::create($params);
     
             echo $charge->__toJSON(); 
         }catch(\Stripe\Error\Card $e) {

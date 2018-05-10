@@ -2,7 +2,7 @@
     <div class="container">
         <div class="row">
             <div class="col">
-                <h1 class="orange-text animated slideInLeft"><strong>Home</strong></h1>
+                <h1 class="orange-text animated slideInLeft"><strong>Home : Update</strong></h1>
                 <hr>    
             </div>
         </div>
@@ -49,15 +49,43 @@
                         <li>Update Customer - <strong>http://es.tr3umphant-designs.com/assets/stripe/customers/updateCustomer.php [ apiKey: String | customerId: String | description: String | token: String ]</strong></li>
                     </ul>
                     <hr>
+                    <p>Orders</p>
+                    <ul>
+                        <li>List All Orders - <strong>http://es.tr3umphant-designs.com/assets/stripe/orders/listAllOrders.php [ apiKey: String | customer: String ]</strong></li>
+                        <li>Create Order - <strong>http://es.tr3umphant-designs.com/assets/stripe/orders/createOrder.php [ apiKey: String | email: String ]</strong></li>
+                        <li>Pay Order - <strong>http://es.tr3umphant-designs.com/assets/stripe/orders/payOrder.php [ apiKey: String | orderId: String | cardId: String ]</strong></li>
+                        <li>Retrieve Order - <strong>http://es.tr3umphant-designs.com/assets/stripe/orders/retrieveOrder.php [ apiKey: String | orderId: String ]</strong></li>
+                    </ul>
+                    <hr>
+                    <p>Payouts</p>
+                    <ul>
+                        <li>Create Payout - <strong>http://es.tr3umphant-designs.com/assets/stripe/payouts/createPayout.php [ apiKey: String | amount: Int | description: String | destination: String | source_type: String | statement_descriptor: String ]</strong></li>
+                        <li>Cancel Payout - <strong>http://es.tr3umphant-designs.com/assets/stripe/payouts/cancelPayout.php [ apiKey: String | payoutId: String ]</strong></li>
+                        <li>List All Payouts - <strong>http://es.tr3umphant-designs.com/assets/stripe/payouts/listAllPayouts.php [ apiKey: String | limit: Int | status: String ]</strong></li>
+                        <li>Retrieve Payout - <strong>http://es.tr3umphant-designs.com/assets/stripe/payouts/retrievePayout.php [ apiKey: String | payoutId: String ]</strong></li>
+                        <li>Update Payout - <strong>http://es.tr3umphant-designs.com/assets/stripe/payouts/updatePayout.php [ apiKey: String | payoutId: String | description: String ]</strong></li>
+                    </ul>
+                    <hr>
+                    <p>Products</p>
+                    <ul>
+                        <li>List All Products - <strong>http://es.tr3umphant-designs.com/assets/stripe/products/listAllProducts.php [ apiKey: String ]</strong></li>
+                        <li>Retrieve Product - <strong>http://es.tr3umphant-designs.com/assets/stripe/products/retrieveProduct.php [ apiKey: String | productId: String ]</strong></li>
+                    </ul>
+                    <p>Skus</p>
+                    <ul>
+                        <li>Retrieve Sku - <strong>http://es.tr3umphant-designs.com/assets/stripe/skus/retrieveSku.php [ apiKey: String | skuId: String ]</strong></li>
+                    </ul>
+                    <hr>
+                    <p>Tokens</p>
+                    <ul>
+                        <li></li>
+                    </ul>
+                    <hr>
                     <p>Transfers</p>
                     <ul>
                         <li>Create Transfer - <strong>http://es.tr3umphant-designs.com/assets/stripe/transfers/createTransfer.php [ apiKey: String | accountId: String ]</strong></li>
                     </ul>
                     <hr>
-                    <p>Payouts</p>
-                    <ul>
-                        <li>Create Payout - <strong>http://es.tr3umphant-designs.com/assets/stripe/payouts/createPayout.php [ apiKey: String | amount: Int | description : String | destination : String | source_type : String | statement_descriptor : String ]</strong></li>
-                    </ul>
                 </div>  
             </div>
         </div>

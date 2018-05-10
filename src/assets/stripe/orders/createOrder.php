@@ -1,24 +1,26 @@
 <?php 
-    require_once($_SERVER['DOCUMENT_ROOT']."/assets/vendor/autoload.php");
-    
-    $apiKey = $_POST['apiKey'];
-    $stripe_account = $_POST['stripe_account'];
+    require_once($_SERVER['DOCUMENT_ROOT'].'/assets/vendor/autoload.php');
 
+    $apiKey = $_POST['apiKey'];
+    $email = $_POST['email'];
+    $customer = $_POST['customer'];
+    $items = $_POST['items'];
+    $shipping = $_POST['shipping'];
+    
     if(isset($apiKey)){
         try{
             //Set API Key.
             \Stripe\Stripe::setApiKey($apiKey);
-    
-            $payout = \Stripe\Payout::create(
-                array(
-                  "amount" => 1000,
-                  "currency" => "usd",
-                  "method" => "instant"
-                ),
-                array("stripe_account" => $stripe_account)
-              );
-    
-            echo $payout->__toJSON(); 
+
+            $order = \Stripe\Order::create(array(
+                'customer' => $customer,
+                'items' => $items,
+                'currency' => 'usd',
+                'shipping' => $shipping,
+                'email' => $email
+            ));
+
+            echo $order->__toJSON();
         }catch(\Stripe\Error\Card $e) {
             echo $e->__toJSON();
         }catch (\Stripe\Error\RateLimit $e) {
@@ -38,8 +40,8 @@
         }catch (Exception $e) {
             // Something else happened, completely unrelated to Stripe
             echo $e->__toJSON();
-        }            
+        }          
     }else{
-        echo "Api key not set, cannot access. Goodbye.";
+        echo 'Api key not set, cannot access. Goodbye.';
     }
 ?>

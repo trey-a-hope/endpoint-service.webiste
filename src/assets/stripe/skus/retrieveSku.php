@@ -2,23 +2,23 @@
     require_once($_SERVER['DOCUMENT_ROOT']."/assets/vendor/autoload.php");
     
     $apiKey = $_POST['apiKey'];
-    $stripe_account = $_POST['stripe_account'];
+    $skuId = $_POST['skuId'];
 
     if(isset($apiKey)){
         try{
             //Set API Key.
             \Stripe\Stripe::setApiKey($apiKey);
     
-            $payout = \Stripe\Payout::create(
+            $sku = \Stripe\SKU::retrieve(
                 array(
-                  "amount" => 1000,
-                  "currency" => "usd",
-                  "method" => "instant"
-                ),
-                array("stripe_account" => $stripe_account)
-              );
+                    'id' => $skuId,
+                    'expand' => array(
+                        'product'
+                    )
+                )
+            );
     
-            echo $payout->__toJSON(); 
+            echo $sku->__toJSON(); 
         }catch(\Stripe\Error\Card $e) {
             echo $e->__toJSON();
         }catch (\Stripe\Error\RateLimit $e) {

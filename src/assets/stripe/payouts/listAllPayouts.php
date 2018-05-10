@@ -2,23 +2,22 @@
     require_once($_SERVER['DOCUMENT_ROOT']."/assets/vendor/autoload.php");
     
     $apiKey = $_POST['apiKey'];
-    $stripe_account = $_POST['stripe_account'];
+    $limit = $_POST['limit']; 
+    $status = $_POST['status']; 
 
     if(isset($apiKey)){
         try{
             //Set API Key.
             \Stripe\Stripe::setApiKey($apiKey);
+
+            $params = array(
+                'limit'     => $limit,  // A limit on the number of objects to be returned.
+                'status'    => $status  // Only return payouts that have the given status: pending, paid, failed, or canceled.
+            );
     
-            $payout = \Stripe\Payout::create(
-                array(
-                  "amount" => 1000,
-                  "currency" => "usd",
-                  "method" => "instant"
-                ),
-                array("stripe_account" => $stripe_account)
-              );
+            $payouts = \Stripe\Payout::all($params);
     
-            echo $payout->__toJSON(); 
+            echo $payouts->__toJSON();
         }catch(\Stripe\Error\Card $e) {
             echo $e->__toJSON();
         }catch (\Stripe\Error\RateLimit $e) {

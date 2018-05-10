@@ -1,9 +1,8 @@
 <?php 
     require_once($_SERVER['DOCUMENT_ROOT']."/assets/vendor/autoload.php");
 
+    //Required parameters.
     $apiKey = $_POST['apiKey'];
-    $description = $_POST['description'];
-    $token = $_POST['token'];
     $customerId = $_POST['customerId'];
     
     if(isset($apiKey)){
@@ -14,9 +13,20 @@
             //Retrieve customer.
             $customer = \Stripe\Customer::retrieve($customerId);
 
-            //Update customer.
-            $customer->description = $description;
-            $customer->source = $token;
+            //Update customer description
+            if(!empty($_POST['description'])){
+              $customer->description = $_POST['description'];
+            }
+
+            //Update customer source.
+            if(!empty($_POST['token'])){
+              $customer->source = $_POST['token'];
+            }
+
+            //Update customer shipping information.
+            if(!empty($_POST['shipping'])){
+              $customer->shipping = $_POST['shipping'];
+            }
 
             //Save customer.
             $customer->save();

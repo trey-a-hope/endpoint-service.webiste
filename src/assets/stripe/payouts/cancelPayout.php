@@ -2,21 +2,15 @@
     require_once($_SERVER['DOCUMENT_ROOT']."/assets/vendor/autoload.php");
     
     $apiKey = $_POST['apiKey'];
-    $stripe_account = $_POST['stripe_account'];
+    $payoutId = $_POST['payoutId']; // The identifier of the payout to be canceled.
 
     if(isset($apiKey)){
         try{
             //Set API Key.
             \Stripe\Stripe::setApiKey($apiKey);
     
-            $payout = \Stripe\Payout::create(
-                array(
-                  "amount" => 1000,
-                  "currency" => "usd",
-                  "method" => "instant"
-                ),
-                array("stripe_account" => $stripe_account)
-              );
+            $payout = \Stripe\Payout::retrieve($payoutId);
+            $payout->cancel();
     
             echo $payout->__toJSON(); 
         }catch(\Stripe\Error\Card $e) {

@@ -1,24 +1,19 @@
 <?php 
     require_once($_SERVER['DOCUMENT_ROOT']."/assets/vendor/autoload.php");
-    
-    $apiKey = $_POST['apiKey'];
-    $stripe_account = $_POST['stripe_account'];
 
+    $apiKey = $_POST['apiKey'];
+    $customer = $_POST['customer'];
+    
     if(isset($apiKey)){
         try{
             //Set API Key.
             \Stripe\Stripe::setApiKey($apiKey);
-    
-            $payout = \Stripe\Payout::create(
-                array(
-                  "amount" => 1000,
-                  "currency" => "usd",
-                  "method" => "instant"
-                ),
-                array("stripe_account" => $stripe_account)
-              );
-    
-            echo $payout->__toJSON(); 
+
+            $orders = \Stripe\Order::all(array(
+                'customer' => $customer
+            ));
+
+            echo $orders->__toJSON();
         }catch(\Stripe\Error\Card $e) {
             echo $e->__toJSON();
         }catch (\Stripe\Error\RateLimit $e) {
@@ -38,7 +33,7 @@
         }catch (Exception $e) {
             // Something else happened, completely unrelated to Stripe
             echo $e->__toJSON();
-        }            
+        }          
     }else{
         echo "Api key not set, cannot access. Goodbye.";
     }
