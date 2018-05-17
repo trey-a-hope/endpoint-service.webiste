@@ -1,71 +1,37 @@
 <?php 
-    require_once($_SERVER['DOCUMENT_ROOT']."/assets/vendor/autoload.php");
-    
-    $apiKey = $_POST['apiKey'];
-    $customerId = $_POST['customerId'];
-    $cardId = $_POST['cardId'];
-    
-    if(isset($apiKey)){
-        try{
-            //Set API Key.
-            \Stripe\Stripe::setApiKey($apiKey);
-            
-            //Retrieve customer.
-            $customer = \Stripe\Customer::retrieve($customerId);
+    require_once($_SERVER['DOCUMENT_ROOT'].'/assets/vendor/autoload.php');
 
-            //Remove card.
-            $customer->sources->retrieve($cardId)->delete();
+    $data = (array) json_decode(file_get_contents('php://input'), TRUE);
 
-            //Print json object.
-            echo $customer->__toJSON();
-        }catch(\Stripe\Error\Card $e) {
-            // Since it's a decline, \Stripe\Error\Card will be caught
-            $body = $e->getJsonBody();
-            $err  = $body['error'];
+    try{
+        //Set API Key.
+        \Stripe\Stripe::setApiKey($data['apiKey']);
 
-            print('Status is:' . $e->getHttpStatus() . "\n");
-            print('Type is:' . $err['type'] . "\n");
-            print('Code is:' . $err['code'] . "\n");
-            // param is '' in this case
-            print('Param is:' . $err['param'] . "\n");
-            print('Message is:' . $err['message'] . "\n");
-        }catch (\Stripe\Error\RateLimit $e) {
-            // Too many requests made to the API too quickly
-            // Since it's a decline, \Stripe\Error\Card will be caught
-            $body = $e->getJsonBody();
-            $err  = $body['error'];
+        //Retrieve customer.
+        $customer = \Stripe\Customer::retrieve($data['customerId']);
 
-            print('Status is:' . $e->getHttpStatus() . "\n");
-            print('Type is:' . $err['type'] . "\n");
-            print('Code is:' . $err['code'] . "\n");
-            // param is '' in this case
-            print('Param is:' . $err['param'] . "\n");
-            print('Message is:' . $err['message'] . "\n");        }catch (\Stripe\Error\InvalidRequest $e) {
-        }catch (\Stripe\Error\Authentication $e) {
-            // Authentication with Stripe's API failed
-            // Since it's a decline, \Stripe\Error\Card will be caught
-            $body = $e->getJsonBody();
-            $err  = $body['error'];
+        //Remove card.
+        $customer->sources->retrieve($data['cardId'])->delete();
 
-            print('Status is:' . $e->getHttpStatus() . "\n");
-            print('Type is:' . $err['type'] . "\n");
-            print('Code is:' . $err['code'] . "\n");
-            // param is '' in this case
-            print('Param is:' . $err['param'] . "\n");
-            print('Message is:' . $err['message'] . "\n");        }catch (\Stripe\Error\ApiConnection $e) {
-        }catch (\Stripe\Error\Base $e) {
-            // Since it's a decline, \Stripe\Error\Card will be caught
-            $body = $e->getJsonBody();
-            $err  = $body['error'];
-
-            print('Status is:' . $e->getHttpStatus() . "\n");
-            print('Type is:' . $err['type'] . "\n");
-            print('Code is:' . $err['code'] . "\n");
-            // param is '' in this case
-            print('Param is:' . $err['param'] . "\n");
-            print('Message is:' . $err['message'] . "\n");        }catch (Exception $e) {
-        }           
-    }else{
-        echo "Api key not set, cannot access. Goodbye.";
-    }
+        echo $customer->__toJSON();
+    }catch(\Stripe\Error\Card $e) {
+      echo $e->getMessage();
+    } catch (\Stripe\Error\RateLimit $e) {
+      // Too many requests made to the API too quickly
+      echo $e->getMessage();
+    } catch (\Stripe\Error\InvalidRequest $e) {
+      // Invalid parameters were supplied to Stripe's API
+      echo $e->getMessage();
+    } catch (\Stripe\Error\Authentication $e) {
+      // Authentication with Stripe's API failed
+      echo $e->getMessage();
+    } catch (\Stripe\Error\ApiConnection $e) {
+      // Network communication with Stripe failed
+      echo $e->getMessage();
+    } catch (\Stripe\Error\Base $e) {
+      echo $e->getMessage();
+    } catch (Exception $e) {
+      // Something else happened, completely unrelated to Stripe
+      echo $e->getMessage();
+    }  
 ?>

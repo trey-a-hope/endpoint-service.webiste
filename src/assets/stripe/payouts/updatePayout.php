@@ -1,41 +1,42 @@
 <?php 
-    require_once($_SERVER['DOCUMENT_ROOT']."/assets/vendor/autoload.php");
-    
-    $apiKey = $_POST['apiKey'];
-    $payoutId = $_POST['payoutId']; // The identifier of the payout to be canceled.
-    $description = $_POST['description'];
+    require_once($_SERVER['DOCUMENT_ROOT'].'/assets/vendor/autoload.php');
 
-    if(isset($apiKey)){
-        try{
-            //Set API Key.
-            \Stripe\Stripe::setApiKey($apiKey);
-    
-            $payout = \Stripe\Payout::retrieve($payoutId);
-            $payout->metadata['description'] = $description;
-            $payout->save();
-    
-            echo $payout->__toJSON(); 
-        }catch(\Stripe\Error\Card $e) {
-            echo $e->__toJSON();
-        }catch (\Stripe\Error\RateLimit $e) {
-            // Too many requests made to the API too quickly
-            echo $e->__toJSON();
-        }catch (\Stripe\Error\InvalidRequest $e) {
-            // Invalid parameters were supplied to Stripe's API
-            echo $e->__toJSON();
-        }catch (\Stripe\Error\Authentication $e) {
-            // Authentication with Stripe's API failed
-            echo $e->__toJSON();
-        }catch (\Stripe\Error\ApiConnection $e) {
-            // Network communication with Stripe failed
-            echo $e->__toJSON();
-        }catch (\Stripe\Error\Base $e) {
-            echo $e->__toJSON();
-        }catch (Exception $e) {
-            // Something else happened, completely unrelated to Stripe
-            echo $e->__toJSON();
-        }            
-    }else{
-        echo "Api key not set, cannot access. Goodbye.";
-    }
+    $data = (array) json_decode(file_get_contents('php://input'), TRUE);
+
+    try{
+        //Set API Key.
+        \Stripe\Stripe::setApiKey($data['apiKey']);
+
+        //Retrieve payout.
+        $payout = \Stripe\Payout::retrieve($data['payoutId']);
+
+        //Update description on metadata.
+        if(!is_null($data['description'])){
+            $payout->metadata['description'] = $data['description'];
+        }
+
+        //Save payout.
+        $payout->save();
+
+        echo $payout->__toJSON(); 
+    }catch(\Stripe\Error\Card $e) {
+      echo $e->getMessage();
+    } catch (\Stripe\Error\RateLimit $e) {
+      // Too many requests made to the API too quickly
+      echo $e->getMessage();
+    } catch (\Stripe\Error\InvalidRequest $e) {
+      // Invalid parameters were supplied to Stripe's API
+      echo $e->getMessage();
+    } catch (\Stripe\Error\Authentication $e) {
+      // Authentication with Stripe's API failed
+      echo $e->getMessage();
+    } catch (\Stripe\Error\ApiConnection $e) {
+      // Network communication with Stripe failed
+      echo $e->getMessage();
+    } catch (\Stripe\Error\Base $e) {
+      echo $e->getMessage();
+    } catch (Exception $e) {
+      // Something else happened, completely unrelated to Stripe
+      echo $e->getMessage();
+    }  
 ?>

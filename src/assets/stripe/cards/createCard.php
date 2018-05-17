@@ -1,51 +1,46 @@
 <?php 
-    require_once($_SERVER['DOCUMENT_ROOT']."/assets/vendor/autoload.php");
-    
-    $apiKey = $_POST['apiKey'];
-    $object = $_POST['object'];
-    $exp_month = $_POST['exp_month'];
-    $exp_year = $_POST['exp_year'];
-    $number = $_POST['number'];
-    $customerId = $_POST['customerId'];
+    require_once($_SERVER['DOCUMENT_ROOT'].'/assets/vendor/autoload.php');
 
-    if(isset($apiKey)){
-        try{
-            //Set API Key.
-            \Stripe\Stripe::setApiKey($apiKey);
-    
-            $customer = \Stripe\Customer::retrieve($customerId);
-            $customer->sources->create(
-                array(
-                    'source' => array(
-                        'object' => $object,
-                        'exp_month' => $exp_month,
-                        'exp_year' => $exp_year,
-                        'number' => $number
-                    )
+    $data = (array) json_decode(file_get_contents('php://input'), TRUE);
+
+    try{
+        //Set API Key.
+        \Stripe\Stripe::setApiKey($data['apiKey']);
+
+        //Retrieve customer.
+        $customer = \Stripe\Customer::retrieve($data['customerId']);
+
+        //Create card as source for customer.
+        $customer->sources->create(
+            array(
+                'source' => array(
+                    'object' => 'card',
+                    'exp_month' => $data['exp_month'],
+                    'exp_year' => $data['exp_year'],
+                    'number' => $data['number']
                 )
-            );
-            echo $customer->__toJSON();
-        }catch(\Stripe\Error\Card $e) {
-            echo $e->__toJSON();
-        }catch (\Stripe\Error\RateLimit $e) {
-            // Too many requests made to the API too quickly
-            echo $e->__toJSON();
-        }catch (\Stripe\Error\InvalidRequest $e) {
-            // Invalid parameters were supplied to Stripe's API
-            echo $e->__toJSON();
-        }catch (\Stripe\Error\Authentication $e) {
-            // Authentication with Stripe's API failed
-            echo $e->__toJSON();
-        }catch (\Stripe\Error\ApiConnection $e) {
-            // Network communication with Stripe failed
-            echo $e->__toJSON();
-        }catch (\Stripe\Error\Base $e) {
-            echo $e->__toJSON();
-        }catch (Exception $e) {
-            // Something else happened, completely unrelated to Stripe
-            echo $e->__toJSON();
-        }            
-    }else{
-        echo "Api key not set, cannot access. Goodbye.";
-    }
+            )
+        );
+
+        echo $customer->__toJSON();
+    }catch(\Stripe\Error\Card $e) {
+      echo $e->getMessage();
+    } catch (\Stripe\Error\RateLimit $e) {
+      // Too many requests made to the API too quickly
+      echo $e->getMessage();
+    } catch (\Stripe\Error\InvalidRequest $e) {
+      // Invalid parameters were supplied to Stripe's API
+      echo $e->getMessage();
+    } catch (\Stripe\Error\Authentication $e) {
+      // Authentication with Stripe's API failed
+      echo $e->getMessage();
+    } catch (\Stripe\Error\ApiConnection $e) {
+      // Network communication with Stripe failed
+      echo $e->getMessage();
+    } catch (\Stripe\Error\Base $e) {
+      echo $e->getMessage();
+    } catch (Exception $e) {
+      // Something else happened, completely unrelated to Stripe
+      echo $e->getMessage();
+    }  
 ?>
