@@ -7,13 +7,13 @@
         //Set API Key.
         \Stripe\Stripe::setApiKey($data['apiKey']);
 
-        //Retrieve order.
-        $order = \Stripe\Order::retrieve($data['orderId']);
+        //Retrieve customer.
+        $customer = \Stripe\Customer::retrieve($data['customerId']);
 
-        //Pay order.
-        $order->pay();
+        //Detach source from customer.
+        $customer->sources->retrieve($data['sourceId'])->detach();
 
-        echo $order->__toJSON();
+        echo $customer->__toJSON();
     }catch(\Stripe\Error\Card $e) {
       echo $e->__toJSON();
     } catch (\Stripe\Error\RateLimit $e) {
