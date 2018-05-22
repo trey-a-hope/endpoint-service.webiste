@@ -8,7 +8,14 @@
         \Stripe\Stripe::setApiKey($data['apiKey']);
 
         //Retrieve order.
-        $order = \Stripe\Order::retrieve($data['orderId']);
+        $order = \Stripe\Order::retrieve(
+            array(
+                'id' => $data['orderId'],
+                'expand' => array(
+                    'charge'
+                )
+            )
+        );
 
         echo $order->__toJSON();
     }catch(\Stripe\Error\Card $e) {

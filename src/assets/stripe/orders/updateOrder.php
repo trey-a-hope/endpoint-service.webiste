@@ -7,36 +7,41 @@
         //Set API Key.
         \Stripe\Stripe::setApiKey($data['apiKey']);
 
-        //Retrieve all orders for customer.
-        $orders = \Stripe\Order::all(
-            array(
-              'customer' => $data['customer'],
-              'status' => $data['status'],
-              'expand' => array(
-                  'data.charge'
-              )
-            )
-        );
+        //Retrieve order.
+        $order = \Stripe\Order::retrieve($data['orderId']);
 
-        echo $orders->__toJSON();
+        //Update status.
+        if(!is_null($data['status'])){
+            $order->status = $data['status'];
+        }
+
+        //Update meta data.
+        if(!is_null($data['metadata'])){
+            $order->metadata = $data['metadata'];
+        }
+
+        //Save order updates.
+        $order->save();
+
+        echo $order->__toJSON();
     }catch(\Stripe\Error\Card $e) {
-      echo $e->getMessage();
+      echo $e->__toJSON();
     } catch (\Stripe\Error\RateLimit $e) {
       // Too many requests made to the API too quickly
-      echo $e->getMessage();
+      echo $e->__toJSON();
     } catch (\Stripe\Error\InvalidRequest $e) {
       // Invalid parameters were supplied to Stripe's API
-      echo $e->getMessage();
+      echo $e->__toJSON();
     } catch (\Stripe\Error\Authentication $e) {
       // Authentication with Stripe's API failed
-      echo $e->getMessage();
+      echo $e->__toJSON();
     } catch (\Stripe\Error\ApiConnection $e) {
       // Network communication with Stripe failed
-      echo $e->getMessage();
+      echo $e->__toJSON();
     } catch (\Stripe\Error\Base $e) {
-      echo $e->getMessage();
+      echo $e->__toJSON();
     } catch (Exception $e) {
       // Something else happened, completely unrelated to Stripe
-      echo $e->getMessage();
+      echo $e->__toJSON();
     }  
 ?>
