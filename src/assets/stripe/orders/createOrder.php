@@ -14,7 +14,8 @@
             'currency' => 'usd',
             'shipping' => $data['shipping'],
             'email' => $data['email'],
-            'metadata' => $data['metadata']
+            'metadata' => $data['metadata'],
+            'coupon' => $data['coupon']
         ));
 
         echo $order->__toJSON();
